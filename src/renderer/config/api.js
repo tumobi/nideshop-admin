@@ -13,7 +13,7 @@ axios.interceptors.request.use(
         return Promise.reject(err);
     });
 
-export const rootUrl = 'http://sun.zwjk.com/admin';
+export const rootUrl = 'http://127.0.0.1/admin';
 
 export const login = params => { return axios.post(`${rootUrl}/auth/login`, params).then(res => res.data); };
 
