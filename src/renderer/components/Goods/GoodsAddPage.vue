@@ -14,8 +14,8 @@
       <div class="form-table-box">
         <el-form ref="infoForm" :rules="infoRules" :model="infoForm" label-width="120px">
           <el-form-item label="所属分类">
-            <el-cascader :options="options" placeholder="请选择分类" v-model="selectedOptions" @change="handleChange">
-            </el-cascader>
+            <!-- <el-cascader :options="options" placeholder="请选择分类" v-model="selectedOptions" @change="handleChange">
+              </el-cascader> -->
           </el-form-item>
           <el-form-item label="商品名称" prop="name">
             <el-input v-model="infoForm.name"></el-input>
@@ -31,9 +31,7 @@
             <div class="form-tip"></div>
           </el-form-item>
           <el-form-item label="商品图片" prop="list_pic_url">
-            <el-upload class="image-uploader" name="brand_pic"
-                       action="http://127.0.0.1:8360/admin/upload/brandPic" :show-file-list="true"
-                       :on-success="handleUploadImageSuccess" :headers="uploaderHeader">
+            <el-upload class="image-uploader" name="brand_pic" :action="rootUrl + 'upload/brandPic'" :show-file-list="true" :on-success="handleUploadImageSuccess" :headers="uploaderHeader">
               <img v-if="infoForm.list_pic_url" :src="infoForm.list_pic_url" class="image-show">
               <i v-else class="el-icon-plus image-uploader-icon"></i>
             </el-upload>
@@ -65,160 +63,163 @@
 </template>
 
 <script>
-  import api from '@/config/api';
-  export default {
-    data() {
-      return {
-        uploaderHeader: {
-          'X-Nideshop-Token': localStorage.getItem('token') || '',
-        },
-        infoForm: {
-          id: 0,
-          name: "",
-          list_pic_url: '',
-          simple_desc: '',
-          pic_url: '',
-          sort_order: 100,
-          is_show: true,
-          floor_price: 0,
-          app_list_pic_url: '',
-          is_new: false,
-          new_pic_url: "",
-          new_sort_order: 10
-        },
-        infoRules: {
-          name: [
-            { required: true, message: '请输入名称', trigger: 'blur' },
-          ],
-          simple_desc: [
-            { required: true, message: '请输入简介', trigger: 'blur' },
-          ],
-          list_pic_url: [
-            { required: true, message: '请选择商品图片', trigger: 'blur' },
-          ],
-        },
-      }
-    },
-    methods: {
-      goBackPage() {
-        this.$router.go(-1);
+import {rootUrl, brandInfo, addBrand} from '@/config/api'
+export default {
+  data() {
+    return {
+      uploaderHeader: {
+        'X-Nideshop-Token': localStorage.getItem('token') || '',
       },
-      onSubmitInfo() {
-        this.$refs['infoForm'].validate((valid) => {
-          if (valid) {
-            this.axios.post('brand/store', this.infoForm).then((response) => {
-              if (response.data.errno === 0) {
-                this.$message({
-                  type: 'success',
-                  message: '保存成功'
-                });
-                this.$router.go(-1)
-              } else {
-                this.$message({
-                  type: 'error',
-                  message: '保存失败'
-                })
-              }
-            })
-          } else {
-            return false;
-          }
-        });
-      },
-      handleUploadImageSuccess(res, file) {
-        if (res.errno === 0) {
-          switch (res.data.name) {
-            //商品图片
-            case 'brand_pic':
-              this.$set('infoForm.list_pic_url', res.data.fileUrl);
-              break;
-            case 'brand_new_pic':
-              this.$set('infoForm.new_pic_url', res.data.fileUrl);
-              break;
-          }
-        }
-      },
-      getInfo() {
-        if (this.infoForm.id <= 0) {
-          return false
-        }
+      options: [],
+      infoForm: {
+        id: 0,
+        name: "",
+        list_pic_url: '',
+        simple_desc: '',
+        pic_url: '',
+        sort_order: 100,
+        is_show: true,
+        floor_price: 0,
+        app_list_pic_url: '',
+        is_new: false,
+        new_pic_url: "",
+        new_sort_order: 10,
 
-        //加载商品详情
-        let that = this
-        this.axios.get('brand/info', {
-          params: {
-            id: that.infoForm.id
-          }
-        }).then((response) => {
-          let resInfo = response.data.data;
-          resInfo.is_new = resInfo.is_new ? true : false;
-          resInfo.is_show = resInfo.is_show ? true : false;
-          that.infoForm = resInfo;
-        })
-      }
-
-    },
-    components: {},
-    mounted() {
-      this.infoForm.id = this.$route.query.id || 0;
-      this.getInfo();
-      console.log(api)
+      },
+      infoRules: {
+        name: [
+          { required: true, message: '请输入名称', trigger: 'blur' },
+        ],
+        simple_desc: [
+          { required: true, message: '请输入简介', trigger: 'blur' },
+        ],
+        list_pic_url: [
+          { required: true, message: '请选择商品图片', trigger: 'blur' },
+        ],
+      },
     }
+  },
+  methods: {
+    goBackPage() {
+      this.$router.go(-1);
+    },
+    onSubmitInfo() {
+      this.$refs['infoForm'].validate((valid) => {
+        if (valid) {
+          addBrand(this.infoForm).then((response) => {
+            if (response.errno === 0) {
+              this.$message({
+                type: 'success',
+                message: '保存成功'
+              });
+              this.$router.go(-1)
+            } else {
+              this.$message({
+                type: 'error',
+                message: '保存失败'
+              })
+            }
+          })
+        } else {
+          return false;
+        }
+      });
+    },
+    handleUploadImageSuccess(res, file) {
+      if (res.errno === 0) {
+        switch (res.data.name) {
+          //商品图片
+          case 'brand_pic':
+            this.$set('infoForm.list_pic_url', res.data.fileUrl);
+            break;
+          case 'brand_new_pic':
+            this.$set('infoForm.new_pic_url', res.data.fileUrl);
+            break;
+        }
+      }
+    },
+    getInfo() {
+      if (this.infoForm.id <= 0) {
+        return false
+      }
+
+      //加载商品详情
+      let that = this
+      brandInfo({
+        id: that.infoForm.id
+      }).then((response) => {
+        let resInfo = response.data.data;
+        resInfo.is_new = resInfo.is_new ? true : false;
+        resInfo.is_show = resInfo.is_show ? true : false;
+        that.infoForm = resInfo;
+      })
+    },
+    handleChange() {
+
+    }
+
+  },
+  components: {},
+  mounted() {
+    this.infoForm.id = this.$route.query.id || 0;
+    this.getInfo();
   }
+}
 
 </script>
 
 <style>
-  .image-uploader{
-    height: 105px;
-  }
-  .image-uploader .el-upload {
-    border: 1px solid #d9d9d9;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
+.image-uploader {
+  height: 105px;
+}
 
-  .image-uploader .el-upload:hover {
-    border-color: #20a0ff;
-  }
+.image-uploader .el-upload {
+  border: 1px solid #d9d9d9;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
 
-  .image-uploader .image-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 187px;
-    height: 105px;
-    line-height: 105px;
-    text-align: center;
-  }
+.image-uploader .el-upload:hover {
+  border-color: #20a0ff;
+}
 
-  .image-uploader .image-show {
-    width: 187px;
-    height: 105px;
-    display: block;
-  }
+.image-uploader .image-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 187px;
+  height: 105px;
+  line-height: 105px;
+  text-align: center;
+}
 
-  .image-uploader.new-image-uploader {
-    font-size: 28px;
-    color: #8c939d;
-    width: 165px;
-    height: 105px;
-    line-height: 105px;
-    text-align: center;
-  }
+.image-uploader .image-show {
+  width: 187px;
+  height: 105px;
+  display: block;
+}
 
-  .image-uploader.new-image-uploader .image-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 165px;
-    height: 105px;
-    line-height: 105px;
-    text-align: center;
-  }
+.image-uploader.new-image-uploader {
+  font-size: 28px;
+  color: #8c939d;
+  width: 165px;
+  height: 105px;
+  line-height: 105px;
+  text-align: center;
+}
 
-  .image-uploader.new-image-uploader .image-show {
-    width: 165px;
-    height: 105px;
-    display: block;
-  }
+.image-uploader.new-image-uploader .image-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 165px;
+  height: 105px;
+  line-height: 105px;
+  text-align: center;
+}
+
+.image-uploader.new-image-uploader .image-show {
+  width: 165px;
+  height: 105px;
+  display: block;
+}
 </style>

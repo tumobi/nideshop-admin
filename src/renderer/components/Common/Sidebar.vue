@@ -77,6 +77,11 @@
                     <i class="fa fa-circle"></i>
                     <span>会员列表</span>
                 </el-menu-item>
+
+                <!-- <el-menu-item index="/dashboard/user/add">
+                    <i class="fa fa-circle"></i>
+                    <span>添加会员</span>
+                </el-menu-item> -->
             </el-submenu>
             <!--<el-submenu index="setting">-->
                 <!--<template slot="title">-->

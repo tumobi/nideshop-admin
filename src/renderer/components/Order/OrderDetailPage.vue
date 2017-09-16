@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import {brandInfo} from '@/config/api'
     export default {
         data() {
             return {
@@ -37,13 +38,11 @@
 
                 //加载品牌详情
                 let that = this
-                this.axios.get('http://127.0.0.1:8360/admin/brand/info', {
-                    params: {
+                brandInfo({
                         id: that.infoForm.id
-                    }
-                }).then((response) => {
-                    console.log(response.data);
-                    let resInfo = response.data.data;
+                    }).then((response) => {
+                    console.log(response);
+                    let resInfo = response.data;
                     that.infoForm = resInfo;
                     this.pageLoading = false;
                 })
