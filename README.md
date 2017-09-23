@@ -33,6 +33,7 @@ npm run dev
 admin
 admin888
 
+喜欢别忘了Star 本项目长期更新完善，欢迎Watch 交流QQ群：497145766
 
 
 ---
