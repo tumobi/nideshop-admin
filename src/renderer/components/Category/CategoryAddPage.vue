@@ -27,7 +27,7 @@
                     </el-form-item>
                     <el-form-item label="图标" prop="wap_banner_url">
                         <el-upload class="image-uploader" name="wap_banner_pic"
-                                   action="http://127.0.0.1:8360/admin/upload/categoryWapBannerPic" :show-file-list="false"
+                                   :action="rootUrl + '/upload/categoryWapBannerPic'" :show-file-list="false"
                                    :on-success="handleUploadImageSuccess" :headers="uploaderHeader">
                             <img v-if="infoForm.wap_banner_url" :src="infoForm.wap_banner_url" class="image-show">
                             <i v-else class="el-icon-plus image-uploader-icon"></i>
@@ -52,12 +52,14 @@
 
 <script>
   import api from '@/config/api';
+  import {rootUrl, categoryInfo, addCategory, topCategory} from '@/config/api'
   export default {
     data() {
       return {
         uploaderHeader: {
           'X-Nideshop-Token': localStorage.getItem('token') || '',
         },
+        rootUrl: rootUrl,
         parentCategory: [
           {
             id: 0,
@@ -93,8 +95,8 @@
       onSubmitInfo() {
         this.$refs['infoForm'].validate((valid) => {
           if (valid) {
-            this.axios.post('category/store', this.infoForm).then((response) => {
-              if (response.data.errno === 0) {
+            addCategory(this.infoForm).then((response) => {
+              if (response.errno === 0) {
                 this.$message({
                   type: 'success',
                   message: '保存成功'
@@ -124,8 +126,8 @@
         }
       },
       getTopCategory() {
-        this.axios.get('category/topCategory').then((response) => {
-          this.parentCategory = this.parentCategory.concat(response.data.data);
+        topCategory().then((response) => {
+          this.parentCategory = this.parentCategory.concat(response.data);
         })
       },
       getInfo() {
@@ -135,12 +137,10 @@
 
         //加载分类详情
         let that = this
-        this.axios.get('category/info', {
-          params: {
+        categoryInfo({
             id: that.infoForm.id
-          }
         }).then((response) => {
-          let resInfo = response.data.data;
+          let resInfo = response.data;
           resInfo.is_show = resInfo.is_show ? true : false;
           that.infoForm = resInfo;
         })

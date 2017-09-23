@@ -53,6 +53,7 @@
 </template>
 
 <script>
+import {topicList, deleteTopic} from '@/config/api'
 
 export default {
 	data() {
@@ -84,9 +85,9 @@ export default {
 				type: 'warning'
 			}).then(() => {
 
-				this.axios.post('topic/destory', { id: row.id }).then((response) => {
-					console.log(response.data)
-					if (response.data.errno === 0) {
+				deleteTopic({ id: row.id }).then((response) => {
+					console.log(response)
+					if (response.errno === 0) {
 						this.$message({
 							type: 'success',
 							message: '删除成功!'
@@ -104,15 +105,13 @@ export default {
 			this.getList()
 		},
 		getList() {
-			this.axios.get('topic', {
-				params: {
+			topicList({
 					page: this.page,
 					name: this.filterForm.name
-				}
 			}).then((response) => {
-                this.tableData = response.data.data.data
-                this.page = response.data.data.currentPage
-                this.total = response.data.data.count
+                this.tableData = response.data.data
+                this.page = response.data.currentPage
+                this.total = response.data.count
 			})
 		}
 	},

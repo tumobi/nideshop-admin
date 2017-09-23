@@ -22,7 +22,7 @@
                     </el-form-item>
                     <el-form-item label="品牌图片" prop="list_pic_url">
                         <el-upload class="image-uploader" name="brand_pic"
-                                   action="http://127.0.0.1:8360/admin/upload/brandPic" :show-file-list="false"
+                                   :action="rootUrl + '/upload/brandNewPic'" :show-file-list="false"
                                    :on-success="handleUploadImageSuccess" :headers="uploaderHeader">
                             <img v-if="infoForm.list_pic_url" :src="infoForm.list_pic_url" class="image-show">
                             <i v-else class="el-icon-plus image-uploader-icon"></i>
@@ -34,7 +34,7 @@
                     </el-form-item>
                     <el-form-item label="推荐展示图片" v-if="infoForm.is_new">
                         <el-upload class="image-uploader new-image-uploader" name="brand_new_pic"
-                                   action="http://127.0.0.1:8360/admin/upload/brandNewPic" :show-file-list="false"
+                                   :action="rootUrl + '/upload/brandNewPic'" :show-file-list="false"
                                    :on-success="handleUploadImageSuccess" :headers="uploaderHeader">
                             <img v-if="infoForm.new_pic_url" :src="infoForm.new_pic_url" class="image-show">
                             <i v-else class="el-icon-plus image-uploader-icon"></i>
@@ -58,13 +58,14 @@
 </template>
 
 <script>
-    import api from '@/config/api';
+    import {rootUrl, brandInfo, addBrand} from '@/config/api'
     export default {
         data() {
             return {
                 uploaderHeader: {
                     'X-Nideshop-Token': localStorage.getItem('token') || '',
                 },
+                rootUrl: rootUrl,
                 infoForm: {
                     id: 0,
                     name: "",
@@ -99,8 +100,8 @@
             onSubmitInfo() {
                 this.$refs['infoForm'].validate((valid) => {
                     if (valid) {
-                        this.axios.post('brand/store', this.infoForm).then((response) => {
-                            if (response.data.errno === 0) {
+                        addBrand(this.infoForm).then((response) => {
+                            if (response.errno === 0) {
                                 this.$message({
                                     type: 'success',
                                     message: '保存成功'
@@ -138,12 +139,10 @@
 
                 //加载品牌详情
                 let that = this
-                this.axios.get('brand/info', {
-                    params: {
+                brandInfo({
                         id: that.infoForm.id
-                    }
                 }).then((response) => {
-                    let resInfo = response.data.data;
+                    let resInfo = response.data;
                     resInfo.is_new = resInfo.is_new ? true : false;
                     resInfo.is_show = resInfo.is_show ? true : false;
                     that.infoForm = resInfo;
@@ -155,7 +154,6 @@
         mounted() {
             this.infoForm.id = this.$route.query.id || 0;
             this.getInfo();
-            console.log(api)
         }
     }
 

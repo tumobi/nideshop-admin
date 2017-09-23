@@ -26,12 +26,13 @@
     </div>
 </template>
 <script>
+import {login} from '@/config/api'
     export default {
         data() {
             return {
                 form: {
-                    username: '',
-                    password: '',
+                    username: 'admin',
+                    password: 'admin888',
                 },
                 rules: {
                     username: [
@@ -47,6 +48,7 @@
         },
         components: {},
         methods: {
+
             startLogin() {
 
                 this.$refs['form'].validate((valid) => {
@@ -56,15 +58,12 @@
 
                     this.loading = true;
 
-                    this.axios.post('http://127.0.0.1:8360/admin/auth/login', {
-                        username: this.form.username,
-                        password: this.form.password
-                    }).then((res) => {
-                        console.log(res.data)
+                    login({username: this.form.username,password: this.form.password}).then((res) => {
+                        console.log(res)
                         this.loading = false;
-                        if (res.data.errno === 0) {
-                            localStorage.setItem('token', res.data.data.token);
-                            localStorage.setItem('userInfo', JSON.stringify(res.data.data.userInfo));
+                        if (res.errno === 0) {
+                            localStorage.setItem('token', res.data.token);
+                            localStorage.setItem('userInfo', JSON.stringify(res.data.userInfo));
                             this.$router.push({name: 'dashboard'});
 
                         } else {

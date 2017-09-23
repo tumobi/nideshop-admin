@@ -57,7 +57,7 @@
 </template>
 
 <script>
-
+import {rootUrl, deleteOrder, orderList} from '@/config/api';
   export default {
     data() {
       return {
@@ -88,9 +88,9 @@
           type: 'warning'
         }).then(() => {
 
-          this.axios.post('order/destory', { id: row.id }).then((response) => {
-            console.log(response.data)
-            if (response.data.errno === 0) {
+          deleteOrder({ id: row.id }).then((response) => {
+            console.log(response)
+            if (response.errno === 0) {
               this.$message({
                 type: 'success',
                 message: '删除成功!'
@@ -108,16 +108,14 @@
         this.getList()
       },
       getList() {
-        this.axios.get('order', {
-          params: {
+        orderList({
             page: this.page,
             orderSn: this.filterForm.order_sn,
             consignee: this.filterForm.consignee,
-          }
         }).then((response) => {
-          this.tableData = response.data.data.data
-          this.page = response.data.data.currentPage
-          this.total = response.data.data.count
+          this.tableData = response.data.data
+          this.page = response.data.currentPage
+          this.total = response.data.count
         })
       }
     },

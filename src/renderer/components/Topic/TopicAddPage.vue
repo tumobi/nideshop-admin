@@ -22,7 +22,7 @@
                     </el-form-item>
                     <el-form-item label="缩略图" prop="scene_pic_url">
                         <el-upload class="image-uploader" name="scene_pic_url"
-                                   action="http://127.0.0.1:8360/admin/upload/topicThumb" :show-file-list="false"
+                                   :action="rootUrl +  '/upload/topicThumb'" :show-file-list="false"
                                    :on-success="handleUploadImageSuccess" :headers="uploaderHeader">
                             <img v-if="infoForm.scene_pic_url" :src="infoForm.scene_pic_url" class="image-show">
                             <i v-else class="el-icon-plus image-uploader-icon"></i>
@@ -46,13 +46,14 @@
 </template>
 
 <script>
-    import api from '@/config/api';
+    import {rootUrl, topicInfo, addTopic} from '@/config/api';
     export default {
         data() {
             return {
                 uploaderHeader: {
                     'X-Nideshop-Token': localStorage.getItem('token') || '',
                 },
+                rootUrl: rootUrl,
                 infoForm: {
                     id: 0,
                     title: "",
@@ -81,8 +82,8 @@
             onSubmitInfo() {
                 this.$refs['infoForm'].validate((valid) => {
                     if (valid) {
-                        this.axios.post('topic/store', this.infoForm).then((response) => {
-                            if (response.data.errno === 0) {
+                        addTopic(this.infoForm).then((response) => {
+                            if (response.errno === 0) {
                                 this.$message({
                                     type: 'success',
                                     message: '保存成功'
@@ -117,12 +118,8 @@
 
                 //加载专题详情
                 let that = this
-                this.axios.get('topic/info', {
-                    params: {
-                        id: that.infoForm.id
-                    }
-                }).then((response) => {
-                    let resInfo = response.data.data;
+                topicInfo({id: that.infoForm.id }).then((response) => {
+                    let resInfo = response.data;
                     resInfo.is_show = resInfo.is_show ? true : false;
                     that.infoForm = resInfo;
                 })
@@ -133,7 +130,6 @@
         mounted() {
             this.infoForm.id = this.$route.query.id || 0;
             this.getInfo();
-            console.log(api)
         }
     }
 

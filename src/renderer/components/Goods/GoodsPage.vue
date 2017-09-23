@@ -67,7 +67,7 @@
 </template>
 
 <script>
-
+import {rootUrl, goodsList, deleteGoods} from '@/config/api';
   export default {
     data() {
       return {
@@ -98,9 +98,9 @@
           type: 'warning'
         }).then(() => {
 
-          this.axios.post('商品/destory', { id: row.id }).then((response) => {
-            console.log(response.data)
-            if (response.data.errno === 0) {
+          goodsList({ id: row.id }).then((response) => {
+            console.log(response)
+            if (response.errno === 0) {
               this.$message({
                 type: 'success',
                 message: '删除成功!'
@@ -118,15 +118,13 @@
         this.getList()
       },
       getList() {
-        this.axios.get('goods', {
-          params: {
+        goodsList({
             page: this.page,
             name: this.filterForm.name
-          }
         }).then((response) => {
-          this.tableData = response.data.data.data
-          this.page = response.data.data.currentPage
-          this.total = response.data.data.count
+          this.tableData = response.data.data
+          this.page = response.data.currentPage
+          this.total = response.data.count
         })
       }
     },

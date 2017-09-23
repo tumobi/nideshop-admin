@@ -40,6 +40,7 @@
 </template>
 
 <script>
+import {rootUrl, categoryList, deleteCategory} from '@/config/api';
 
   export default {
     data() {
@@ -71,9 +72,9 @@
           type: 'warning'
         }).then(() => {
 
-          this.axios.post('category/destory', { id: row.id }).then((response) => {
-            console.log(response.data)
-            if (response.data.errno === 0) {
+          deleteCategory({ id: row.id }).then((response) => {
+            console.log(response)
+            if (response.errno === 0) {
               this.$message({
                 type: 'success',
                 message: '删除成功!'
@@ -89,13 +90,11 @@
         this.getList()
       },
       getList() {
-        this.axios.get('category', {
-          params: {
+        categoryList({
             page: this.page,
             name: this.filterForm.name
-          }
         }).then((response) => {
-          this.tableData = response.data.data
+          this.tableData = response.data
         })
       }
     },
