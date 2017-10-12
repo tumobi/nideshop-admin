@@ -1,5 +1,5 @@
 # nideshop-admin
-Node.js开源商城NideShop管理后台（基于Node.js、Vue.js、Element UI、Electron）
+Node.js开源商城NideShop管理后台（基于Node.js、Vue.js、Element UI、~~Electron~~）
 
 ### 测试版包含功能（待完善）
 + 管理员登录
@@ -24,8 +24,8 @@ Axios.defaults.baseURL = 'http://127.0.0.1:8360/admin/';  # admin/ 不可删除
 # install dependencies
 npm install
 
-# serve with hot reload at localhost:9080
-npm run dev
+# 编译成 web ，编译成功后把 dist/web 下的文件上传的http服务器的根目录下
+npm run build:web
 
 ```
 
