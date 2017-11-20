@@ -1,6 +1,8 @@
 # nideshop-admin
 Node.js开源商城NideShop管理后台（基于Node.js、Vue.js、Element UI、~~Electron~~）
 
+### 此测试版已停止开发，请不要下载使用。最新重构版正在开发中，敬请期待...
+
 ### 测试版包含功能（待完善）
 + 管理员登录
 + 商品管理
