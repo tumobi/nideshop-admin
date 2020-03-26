@@ -1,7 +1,7 @@
 # nideshop-admin
 Node.js开源商城NideShop管理后台（基于Node.js、Vue.js、Element UI、Electron）
 
-### 如需旧版后台的源码可关于公众号 nideshop 并回复 `后台` 即可获得下载地址。
+### 如需旧版后台的源码可关注微信公众号 nideshop 并回复 `后台` 即可获得下载地址。
 
 
 
